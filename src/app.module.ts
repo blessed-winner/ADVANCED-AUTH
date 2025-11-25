@@ -6,11 +6,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { User } from './auth/entities/user.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal:true
+      isGlobal:true,
+      envFilePath:'.env'
     }),
     TypeOrmModule.forRootAsync({
      imports:[ConfigModule],
@@ -22,6 +24,7 @@ import { JwtModule } from '@nestjs/jwt';
        database:config.get<string>('DB_NAME'),
        username:config.get<string>('DB_USERNAME'),
        password:config.get<string>('DB_PASSWORD'),
+       entities:[User],
        synchronize:true
      })
     }),

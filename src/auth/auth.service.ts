@@ -18,7 +18,7 @@ export class AuthService {
     private jwtService:JwtService
   ){}
  
-  async signup(dto:SignupDto):Promise<{access_token:string}>{
+  async signup(dto:SignupDto):Promise<{user:User,access_token:string}>{
 
       
       const hashed = await bcrypt.hash(dto.password,10)
@@ -38,11 +38,11 @@ export class AuthService {
       try {
         await this.userRepo.save(user)
       } catch (error) {
-        throw new InternalServerErrorException("Problem creating user")
+        throw new InternalServerErrorException("Problem creating user",error.message)
       }
      
     const access_token = await this.generateToken(user.id,user.email,user.role)
-     return { access_token }
+     return {user,access_token }
      
   }
   
@@ -53,7 +53,7 @@ export class AuthService {
       return accessToken
   }
 
-  async login(dto:LoginDto):Promise<{access_token:string}>{
+  async login(dto:LoginDto):Promise<{user:User,access_token:string}>{
 
       const user = await this.userRepo.findOneBy({ email:dto.email.toLowerCase().trim()})
       if(!user) throw new NotFoundException("The user does not exist in the database")
@@ -62,6 +62,6 @@ export class AuthService {
       if(!isMatch) throw new UnauthorizedException("Invalid credentials")
 
       const access_token = await this.generateToken(user.id,user.email,user.role)
-      return { access_token }
+      return { user,access_token }
   }
 }
