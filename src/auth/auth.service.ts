@@ -18,7 +18,7 @@ export class AuthService {
     private jwtService:JwtService
   ){}
  
-  async signup(dto:SignupDto):Promise<{user:User,access_token:string}>{
+  async signup(dto:SignupDto):Promise<{user:User,tokens:{accessToken:string,refreshToken:string}}>{
 
       
       const hashed = await bcrypt.hash(dto.password,10)
@@ -35,25 +35,25 @@ export class AuthService {
         role:Role.USER
       })
 
-      try {
-        await this.userRepo.save(user)
-      } catch (error) {
-        throw new InternalServerErrorException("Problem creating user",error.message)
-      }
-     
-    const access_token = await this.generateToken(user.id,user.email,user.role)
-     return {user,access_token }
+     const tokens = await this.generateTokens(user)
+     return {user,tokens}
      
   }
   
 
-  private async generateToken(userId:string, email:string, role:Role):Promise<string>{
-      const accessPayload = { userId, email, role }
-      const accessToken  = await this.jwtService.signAsync(accessPayload,{expiresIn:'1d'})
-      return accessToken
+  private async generateTokens(user:User):Promise<{accessToken:string,refreshToken:string}>{
+      const payload = { userId:user.id,email:user.email,role:user.role}
+      const accessToken  = await this.jwtService.signAsync(payload,{expiresIn:'1d'})
+
+      const refreshToken = await this.jwtService.signAsync(payload, 
+      {expiresIn:'7d'})
+      user!.refreshToken = await bcrypt.hash(refreshToken,10)
+      await this.userRepo.save(user)
+
+      return { accessToken,refreshToken }
   }
 
-  async login(dto:LoginDto):Promise<{user:User,access_token:string}>{
+  async login(dto:LoginDto):Promise<{user:User,tokens:{accessToken:string,refreshToken:string}}>{
 
       const user = await this.userRepo.findOneBy({ email:dto.email.toLowerCase().trim()})
       if(!user) throw new NotFoundException("The user does not exist in the database")
@@ -61,7 +61,7 @@ export class AuthService {
       const isMatch = await bcrypt.compare(dto.password,user.password)
       if(!isMatch) throw new UnauthorizedException("Invalid credentials")
 
-      const access_token = await this.generateToken(user.id,user.email,user.role)
-      return { user,access_token }
+      const tokens = await this.generateTokens(user)
+      return { user,tokens }
   }
 }
