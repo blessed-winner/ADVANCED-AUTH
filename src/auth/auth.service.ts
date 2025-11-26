@@ -64,4 +64,14 @@ export class AuthService {
       const tokens = await this.generateTokens(user)
       return { user,tokens }
   }
+
+  async refresh(token:string):Promise<{user:User,tokens:{accessToken, refreshToken}}>{
+    const user = await this.userRepo.findOneBy({refreshToken:token})
+    if(!user || !user.refreshToken) throw new UnauthorizedException("Invalid refresh token")
+    const isMatch = await bcrypt.compare(token,user.refreshToken)
+    if(!isMatch) throw new UnauthorizedException("Invalid refresh token")
+
+    const tokens = await this.generateTokens(user)
+    return { user, tokens }  
+  }
 }
