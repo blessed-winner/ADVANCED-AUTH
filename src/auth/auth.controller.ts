@@ -27,6 +27,6 @@ export class AuthController {
 
     @Post('refresh')
     async refresh(@Body() refreshToken:string){
-      
+       return this.authService.refresh(refreshToken)
     }
   }

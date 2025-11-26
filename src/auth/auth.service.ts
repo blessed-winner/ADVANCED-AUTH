@@ -65,8 +65,16 @@ export class AuthService {
       return { user,tokens }
   }
 
-  async refresh(token:string):Promise<{user:User,tokens:{accessToken, refreshToken}}>{
-    const user = await this.userRepo.findOneBy({refreshToken:token})
+  async refresh(token:string):Promise<{user:User,tokens:{accessToken:string, refreshToken:string}}>{
+    let payload: { userId:string, email:string, role:Role }
+
+     try{
+       payload = await this.jwtService.verifyAsync(token,{ secret: this.config.get<string>('JWT_REFRESH_SECRET') })
+     }catch(err){
+       throw new UnauthorizedException('Invalid or expired refresh token')
+     }
+    
+    const user = await this.userRepo.findOneBy({id:payload.userId})
     if(!user || !user.refreshToken) throw new UnauthorizedException("Invalid refresh token")
     const isMatch = await bcrypt.compare(token,user.refreshToken)
     if(!isMatch) throw new UnauthorizedException("Invalid refresh token")
