@@ -17,6 +17,7 @@ export class AuthService {
     private config:ConfigService,
     private jwtService:JwtService
   ){}
+
  
   async signup(dto:SignupDto):Promise<{user:User,tokens:{accessToken:string,refreshToken:string}}>{
 
@@ -42,7 +43,7 @@ export class AuthService {
   
 
   private async generateTokens(user:User):Promise<{accessToken:string,refreshToken:string}>{
-      const payload = { userId:user.id,email:user.email,role:user.role}
+      const payload = { sub:user.id,email:user.email,role:user.role}
       const accessToken  = await this.jwtService.signAsync(payload,{expiresIn:'1d'})
 
       const refreshToken = await this.jwtService.signAsync(payload, 
@@ -66,7 +67,7 @@ export class AuthService {
   }
 
   async refresh(token:string):Promise<{user:User,tokens:{accessToken:string, refreshToken:string}}>{
-    let payload: { userId:string, email:string, role:Role }
+    let payload: { sub:string, email:string, role:Role }
 
      try{
        payload = await this.jwtService.verifyAsync(token,{ secret: this.config.get<string>('JWT_REFRESH_SECRET') })
@@ -74,12 +75,18 @@ export class AuthService {
        throw new UnauthorizedException('Invalid or expired refresh token')
      }
     
-    const user = await this.userRepo.findOneBy({id:payload.userId})
+    const user = await this.userRepo.findOneBy({id:payload.sub})
     if(!user || !user.refreshToken) throw new UnauthorizedException("Invalid refresh token")
     const isMatch = await bcrypt.compare(token,user.refreshToken)
     if(!isMatch) throw new UnauthorizedException("Invalid refresh token")
 
     const tokens = await this.generateTokens(user)
     return { user, tokens }  
+  }
+
+  async validateUserById(id:string){
+     const user = await this.userRepo.findOne({ where:{ id } })
+     if(!user) return null
+     return user
   }
 }
