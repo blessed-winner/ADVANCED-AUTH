@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verification Failed</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #d9534f, #c9302c);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background-color: #fff;
+      padding: 40px 50px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 400px;
+    }
+    h1 {
+      color: #c9302c;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #555;
+      font-size: 16px;
+    }
+    .btn {
+      margin-top: 25px;
+      display: inline-block;
+      background: #c9302c;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background: #a72a25;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>❌ Verification Failed</h1>
+    <p>Sorry, this verification link is invalid or has expired.</p>
+    <a href="/auth/resend-verification" class="btn">Resend Verification Email</a>
+  </div>
+</body>
+</html>
