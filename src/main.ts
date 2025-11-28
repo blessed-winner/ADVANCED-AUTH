@@ -5,7 +5,9 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.useGlobalPipes(new ValidationPipe({transform:true}))
+  
   const config = new DocumentBuilder()
   .setTitle('AdvancedAuth API')
   .setDescription('API documentation for AdvancedAuth backend service')

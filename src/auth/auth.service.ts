@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { MailerService } from './mailer/mailer/mailer.service';
+import { JwtPayload } from 'src/utils/Strategies/jwt-access.strategy';
 
 
 @Injectable()
@@ -116,5 +117,16 @@ export class AuthService {
     } catch (e){
        throw new BadRequestException("Invalid or expired token")
     }
+  }
+
+  async getUserIfRefreshTokenMatches(token:string){
+      const refreshToken = await this.jwtService.verifyAsync(token)
+
+
+      const user = await this.userRepo.findOneBy({refreshToken})
+
+      if(!user || !user.refreshToken) return null
+
+      return user
   }
 }

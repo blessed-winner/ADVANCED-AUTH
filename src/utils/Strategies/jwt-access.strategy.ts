@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { AuthService } from "src/auth/auth.service";
 import { Role } from "src/auth/entities/user.entity";
 
-type JwtPayload = {
+export type JwtPayload = {
   sub:string,
   email:string,
   role:Role
