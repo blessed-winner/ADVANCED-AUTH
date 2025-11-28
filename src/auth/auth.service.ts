@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 import { ConfigService } from '@nestjs/config';
@@ -7,6 +7,7 @@ import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
+import { MailerService } from './mailer/mailer/mailer.service';
 
 
 @Injectable()
@@ -15,7 +16,8 @@ export class AuthService {
     @InjectRepository(User)
     private userRepo:Repository<User>,
     private config:ConfigService,
-    private jwtService:JwtService
+    private jwtService:JwtService,
+    private readonly mailerService:MailerService
   ){}
 
  
@@ -59,6 +61,10 @@ export class AuthService {
       const user = await this.userRepo.findOneBy({ email:dto.email.toLowerCase().trim()})
       if(!user) throw new NotFoundException("The user does not exist in the database")
 
+      if(!user.isEmailVerified){
+        throw new UnauthorizedException()
+      }
+
       const isMatch = await bcrypt.compare(dto.password,user.password)
       if(!isMatch) throw new UnauthorizedException("Invalid credentials")
 
@@ -88,5 +94,25 @@ export class AuthService {
      const user = await this.userRepo.findOne({ where:{ id } })
      if(!user) return null
      return user
+  }
+
+  async verifyEmail(token:string){
+    try {
+      const payload = await this.jwtService.verifyAsync(token)
+      const user = await this.userRepo.findOne({ where: { email:payload.email } })
+      if(!user){
+        throw new BadRequestException("User not found")
+      }
+
+      if(user.isEmailVerified) return { message:"User already verified" }
+
+      user.isEmailVerified = true
+
+      await this.userRepo.save(user)
+      
+      return { message:"User verified successfully" }
+    } catch (e){
+       throw new BadRequestException("Invalid or expired token")
+    }
   }
 }
