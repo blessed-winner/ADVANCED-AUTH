@@ -35,7 +35,7 @@ export class MailerService implements OnModuleInit {
         const htmlContent = await ejs.renderFile(templatePath,{verificationUrl,name})
 
         const info = await this.transporter.sendMail({
-            from: '"Advanced-auth" <noreply@nestcare.test>',
+            from: '"Advanced-auth" <noreply@advanced-auth.test>',
             to,
             subject: "Email verification",
             html:htmlContent

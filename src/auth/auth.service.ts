@@ -3,7 +3,7 @@ import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 import { ConfigService } from '@nestjs/config';
 import { Role, User } from './entities/user.entity';
-import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
@@ -39,6 +39,8 @@ export class AuthService {
       })
 
      const tokens = await this.generateTokens(user)
+     await this.mailerService.sendVerificationEmail(user.email,tokens.accessToken,(user.firstName + " " + user.lastName))
+
      return {user,tokens}
      
   }
