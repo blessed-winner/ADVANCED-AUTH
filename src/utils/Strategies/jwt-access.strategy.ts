@@ -12,7 +12,7 @@ export type JwtPayload = {
 }
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy,'jwt'){
+export class JwtAccessStrategy extends PassportStrategy(Strategy,'jwt'){
   constructor(
     config:ConfigService,
     private authService:AuthService
