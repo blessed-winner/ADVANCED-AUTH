@@ -19,10 +19,15 @@ export class RolesGuard implements CanActivate{
 
          if(!user) return false
 
-         const normalizeRoles = (role:unknown):Role | null => {
+         const normalizeRole = (role:unknown):Role | null => {
             if(!role || typeof role !== 'string' ) return null
             const normalized = role.toLowerCase() as Role
             return((Object.values(Role) as string[]).includes(normalized) ? normalized : null)
          }
+
+         const userRole = normalizeRole(user.role)
+         if(!userRole) return false
+         
+         return requiredRoles.includes(userRole)
     }
 }
