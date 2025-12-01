@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
-import { MailerService } from './mailer/mailer/mailer.service';
+import { MailerService } from './mailer/mailer.service';
 import { JwtPayload } from 'src/utils/Strategies/jwt-access.strategy';
 
 
@@ -40,7 +40,7 @@ export class AuthService {
       })
 
      const tokens = await this.generateTokens(user)
-     await this.mailerService.sendVerificationEmail(user.email,tokens.accessToken,(user.firstName + " " + user.lastName))
+     await this.mailerService.sendVerificationEmail("blessedwinner66@gmail.com",tokens.accessToken,(user.firstName + " " + user.lastName))
 
      return {user,tokens}
      

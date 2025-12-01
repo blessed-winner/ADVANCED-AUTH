@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MailerService } from './mailer/mailer/mailer.service';
+import { MailerService } from './mailer/mailer.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtAccessStrategy } from 'src/utils/Strategies/jwt-access.strategy';
 import { RefreshTokenStrategy } from 'src/utils/Strategies/jwt-refresh.strategy';
