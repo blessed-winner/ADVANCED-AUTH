@@ -2,31 +2,51 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, InternalServerE
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Request } from 'express';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth, ApiParam, ApiBody, ApiUnauthorizedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/utils/guards/jwt.guard';
 
 interface AuthenticatedRequest extends Request{
   user?:{ id:string }
 }
+@ApiTags('User')
+@ApiBearerAuth('JWT')
+@UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
  @Get('view/all')
+ @ApiOperation({summary:"View all users in the system"})
+ @ApiOkResponse({ description: 'Users retrieved successfully' })
+ @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async findAll() {
     return await this.userService.findAll();
   }
 
   @Get('view/:id')
+  @ApiOperation({ summary: 'Get a user by id' })
+  @ApiParam({ name: 'id', description: 'User id' })
+  @ApiOkResponse({ description: 'User retrieved' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async findOne(@Param('id') id: string) {
     return await this.userService.findOne(id);
   }
 
 
   @Delete('delete/:id')
+  @ApiOperation({ summary: 'Delete a user by id' })
+  @ApiParam({ name: 'id', description: 'User id' })
+  @ApiOkResponse({ description: 'User deleted' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async delete(@Param('id') id:string){
     return await this.userService.remove(id)
   }
 
   @Get('profile')
+    @ApiOperation({ summary: 'Get authenticated user profile' })
+    @ApiOkResponse({ description: 'User profile retrieved' })
+    @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async viewProfile(@Req() req:AuthenticatedRequest){
      const userId = req?.user?.id;
      if(!userId) throw new UnauthorizedException("Cannot get authenticated user")
@@ -34,6 +54,10 @@ export class UserController {
   }
 
   @Put('profile')
+    @ApiOperation({ summary: 'Update authenticated user profile' })
+    @ApiBody({ type: UpdateUserDto })
+    @ApiOkResponse({ description: 'User profile updated' })
+    @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async updateProfile(
     @Req() req:AuthenticatedRequest,
     @Body() dto:UpdateUserDto

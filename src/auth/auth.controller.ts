@@ -1,4 +1,5 @@
 import { Body, Controller, Post, Query, Req, Res } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiCookieAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
@@ -7,6 +8,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { Request, Response } from 'express';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -16,6 +18,9 @@ export class AuthController {
     private readonly authService: AuthService
   ) {}
     @Post('login')
+    @ApiOperation({ summary: 'Login user with email and password' })
+    @ApiBody({ type: LoginDto })
+    @ApiResponse({ status: 201, description: 'User logged in and tokens issued' })
     async login(
       @Body() loginDto:LoginDto,
       @Res({passthrough:true}) res:Response
@@ -31,6 +36,9 @@ export class AuthController {
     }
 
     @Post('signup')
+    @ApiOperation({ summary: 'Register a new user' })
+    @ApiBody({ type: SignupDto })
+    @ApiResponse({ status: 201, description: 'User created and tokens issued' })
     async signUp(
       @Body() signupDto:SignupDto,
       @Res({passthrough:true}) res:Response
@@ -45,6 +53,9 @@ export class AuthController {
     }
 
     @Post('refresh')
+    @ApiOperation({ summary: 'Refresh access token using refresh cookie' })
+    @ApiCookieAuth('Refresh_token')
+    @ApiResponse({ status: 200, description: 'New tokens issued and refresh cookie updated' })
     async refresh(
       @Res({passthrough:true}) res:Response,
       @Req() req:Request
@@ -60,6 +71,8 @@ export class AuthController {
   }
 
   @Post('verify-user')
+  @ApiOperation({ summary: 'Verify user email using token' })
+  @ApiResponse({ status: 200, description: 'Email verified' })
   async verify(
     @Query('token') token:string
   ){

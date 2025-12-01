@@ -29,7 +29,6 @@ import { UserModule } from './user/user.module';
        synchronize:true
      })
     }),
-    PassportModule.register({defaultStrategy:'jwt'}),
     JwtModule.registerAsync({
       imports:[ConfigModule],
       inject:[ConfigService],

@@ -12,7 +12,11 @@ async function bootstrap() {
   .setTitle('AdvancedAuth API')
   .setDescription('API documentation for AdvancedAuth backend service')
   .setVersion('1.0')
-  .addBearerAuth()
+  .addBearerAuth({
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT'
+  }, 'JWT')
   .build()
 
   const document = SwaggerModule.createDocument(app,config)

@@ -6,10 +6,14 @@ import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailerService } from './mailer/mailer/mailer.service';
+import { PassportModule } from '@nestjs/passport';
+import { JwtAccessStrategy } from 'src/utils/Strategies/jwt-access.strategy';
+import { RefreshTokenStrategy } from 'src/utils/Strategies/jwt-refresh.strategy';
 
 @Module({
   imports:[
     TypeOrmModule.forFeature([User]),
+    PassportModule.register({defaultStrategy:'jwt'}),
     JwtModule.registerAsync({
       imports:[ConfigModule],
       inject:[ConfigService],
@@ -21,6 +25,6 @@ import { MailerService } from './mailer/mailer/mailer.service';
     ConfigModule
   ],
   controllers: [AuthController],
-  providers: [AuthService,MailerService],
+  providers: [AuthService, MailerService, JwtAccessStrategy, RefreshTokenStrategy],
 })
 export class AuthModule {}
