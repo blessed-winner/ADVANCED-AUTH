@@ -5,6 +5,9 @@ import { Request } from 'express';
 import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth, ApiParam, ApiBody, ApiUnauthorizedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/utils/guards/jwt.guard';
+import { RolesGuard } from 'src/utils/guards/roles.guard';
+import { Roles } from 'src/utils/decorators/role.decorator';
+import { Role } from 'src/auth/entities/user.entity';
 
 interface AuthenticatedRequest extends Request{
   user?:{ id:string }
@@ -16,6 +19,8 @@ interface AuthenticatedRequest extends Request{
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+ @UseGuards(RolesGuard)
+ @Roles(Role.ADMIN) 
  @Get('view/all')
  @ApiOperation({summary:"View all users in the system"})
  @ApiOkResponse({ description: 'Users retrieved successfully' })
@@ -24,6 +29,8 @@ export class UserController {
     return await this.userService.findAll();
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   @Get('view/:id')
   @ApiOperation({ summary: 'Get a user by id' })
   @ApiParam({ name: 'id', description: 'User id' })
@@ -34,6 +41,8 @@ export class UserController {
   }
 
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   @Delete('delete/:id')
   @ApiOperation({ summary: 'Delete a user by id' })
   @ApiParam({ name: 'id', description: 'User id' })
@@ -43,6 +52,8 @@ export class UserController {
     return await this.userService.remove(id)
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.USER)
   @Get('profile')
     @ApiOperation({ summary: 'Get authenticated user profile' })
     @ApiOkResponse({ description: 'User profile retrieved' })
@@ -53,6 +64,8 @@ export class UserController {
      return await this.userService.getProfile(userId)
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.USER)
   @Put('profile')
     @ApiOperation({ summary: 'Update authenticated user profile' })
     @ApiBody({ type: UpdateUserDto })
