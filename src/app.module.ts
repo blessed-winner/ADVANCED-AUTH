@@ -4,16 +4,16 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { User } from './auth/entities/user.entity';
 import { UserModule } from './user/user.module';
+import { TokenService } from './utils/token/token.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal:true,
-      envFilePath:'.env'
+      envFilePath:'.env.example'
     }),
     TypeOrmModule.forRootAsync({
      imports:[ConfigModule],
@@ -41,6 +41,6 @@ import { UserModule } from './user/user.module';
     UserModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, TokenService],
 })
 export class AppModule {}
