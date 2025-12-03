@@ -28,4 +28,11 @@ export class User {
 
    @Column({default:false})
    isEmailVerified:boolean
+ 
+   @Column({nullable:true})
+   passwordResetToken?:string
+
+   @Column({nullable:true})
+   passwordResetTokenExpiry?:Date
+
 }

@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { MailerService } from './mailer/mailer.service';
 import { JwtPayload } from 'src/utils/Strategies/jwt-access.strategy';
+import * as crypto from 'crypto';
 
 
 @Injectable()
