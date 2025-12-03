@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { User } from './auth/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { TokenService } from './utils/token/token.service';
+import { PasswordResetToken } from './auth/entities/password-reset';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { TokenService } from './utils/token/token.service';
        database:config.get<string>('DB_NAME'),
        username:config.get<string>('DB_USERNAME'),
        password:config.get<string>('DB_PASSWORD'),
-       entities:[User],
+       entities:[User,PasswordResetToken],
        synchronize:true
      })
     }),

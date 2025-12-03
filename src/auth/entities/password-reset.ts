@@ -6,8 +6,8 @@ export class PasswordResetToken{
   @PrimaryGeneratedColumn('uuid')
   id:string
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @OneToOne(() => User,(user)=>user.passwordResetToken,{onDelete:'CASCADE'})
+  @JoinColumn({name:"userId"})
   user:User
 
   @Column()
