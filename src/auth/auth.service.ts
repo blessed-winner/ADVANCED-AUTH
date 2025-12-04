@@ -141,4 +141,12 @@ export class AuthService {
 
      await this.tokenService.saveToken(token,userId,"10")
   }
+
+  async resetPassword(token:string,newPassword:string){
+      const record = await this.tokenService.validateToken(token)
+      if(!record){
+        throw new NotFoundException("Token expired or unmatching")
+      }
+
+  }
 }
