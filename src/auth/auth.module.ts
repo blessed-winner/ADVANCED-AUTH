@@ -23,7 +23,7 @@ import { TokenService } from 'src/utils/token/token.service';
         signOptions: { expiresIn: '1d' }
       })
     }),
-    ConfigModule
+    ConfigModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, MailerService, JwtAccessStrategy, RefreshTokenStrategy,TokenService],

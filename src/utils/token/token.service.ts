@@ -15,7 +15,10 @@ export class TokenService {
    }
 
    async validateToken(token:string):Promise<{userId:string} | null>{
-       const record = await this.resetRepo.findOne({ where:{ token } })
+       const record = await this.resetRepo.findOne({ 
+         where:{ token },
+         relations: [ "user" ] 
+      })
        if(!record) return null
        if(record.expiresAt < new Date()){
         await this.deleteToken(token)

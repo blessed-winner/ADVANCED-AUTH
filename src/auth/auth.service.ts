@@ -42,6 +42,9 @@ export class AuthService {
       })
 
      const tokens = await this.generateTokens(user)
+
+     await this.userRepo.save(user)
+
      await this.mailerService.sendVerificationEmail("blessedwinner66@gmail.com",tokens.accessToken,(user.firstName + " " + user.lastName))
 
      return {user,tokens}
@@ -140,6 +143,8 @@ export class AuthService {
      const token = this.tokenService.generateRandomToken()
 
      await this.tokenService.saveToken(token,userId,"10")
+
+     await this.mailerService.sendResetPasswordEmail("blessedwinner66@gmail.com",token,user.firstName,user.lastName)
   }
 
   async resetPassword(token:string,newPassword:string){
@@ -157,6 +162,8 @@ export class AuthService {
           throw new BadRequestException("User Not Found")
         }
 
-      await this.userRepo.save(updatedUser) 
+      await this.userRepo.save(updatedUser)
+      
+      return { message:"Password updated successfully" }
   }
 }

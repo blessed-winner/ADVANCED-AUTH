@@ -47,4 +47,24 @@ export class MailerService implements OnModuleInit {
         }
       
     }
+    async sendResetPasswordEmail(to:string,token:string,firstName:string,lastName:string){
+        try{
+        const resetUrl = `http://localhost:3000/auth/reset-password?token=${token}`
+        const templatePath =  path.join(process.cwd(),"src","auth","mailer","templates","reset-password.ejs")
+        const htmlContent = await ejs.renderFile(templatePath,{resetUrl,firstName,lastName})
+
+        const info = await this.transporter.sendMail({
+            from: '"Advanced-auth" <noreply@advanced-auth.test>',
+            to,
+            subject: "Password Reset",
+            html:htmlContent
+        })
+
+        console.log(`Password reset email sent to ${to}` )
+        } catch(error){
+           console.error('An error occured', error)
+        }
+      
+    }
+
 }
