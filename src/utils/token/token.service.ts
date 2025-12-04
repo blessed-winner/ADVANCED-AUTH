@@ -22,7 +22,7 @@ export class TokenService {
         return null
        }
 
-       return { userId:record.user.id}
+       return {userId:record.user.id}
    }
 
    async saveToken(token:string,userId:string,expiresInSeconds:string){

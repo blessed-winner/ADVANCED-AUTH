@@ -147,6 +147,16 @@ export class AuthService {
       if(!record){
         throw new NotFoundException("Token expired or unmatching")
       }
+    
+      const updatedUser = await this.userRepo.preload({
+          id:record.userId,
+          password:newPassword
+        })
 
+        if(!updatedUser){
+          throw new BadRequestException("User Not Found")
+        }
+
+      await this.userRepo.save(updatedUser) 
   }
 }
