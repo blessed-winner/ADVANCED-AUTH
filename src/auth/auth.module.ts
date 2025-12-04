@@ -10,10 +10,11 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtAccessStrategy } from 'src/utils/Strategies/jwt-access.strategy';
 import { RefreshTokenStrategy } from 'src/utils/Strategies/jwt-refresh.strategy';
 import { TokenService } from 'src/utils/token/token.service';
+import { PasswordResetToken } from './entities/password-reset';
 
 @Module({
   imports:[
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User,PasswordResetToken]),
     PassportModule.register({defaultStrategy:'jwt'}),
     JwtModule.registerAsync({
       imports:[ConfigModule],
@@ -27,5 +28,6 @@ import { TokenService } from 'src/utils/token/token.service';
   ],
   controllers: [AuthController],
   providers: [AuthService, MailerService, JwtAccessStrategy, RefreshTokenStrategy,TokenService],
+  exports: [ TypeOrmModule ]
 })
 export class AuthModule {}
