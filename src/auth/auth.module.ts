@@ -9,6 +9,7 @@ import { MailerService } from './mailer/mailer.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtAccessStrategy } from 'src/utils/Strategies/jwt-access.strategy';
 import { RefreshTokenStrategy } from 'src/utils/Strategies/jwt-refresh.strategy';
+import { TokenService } from 'src/utils/token/token.service';
 
 @Module({
   imports:[
@@ -25,6 +26,6 @@ import { RefreshTokenStrategy } from 'src/utils/Strategies/jwt-refresh.strategy'
     ConfigModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, MailerService, JwtAccessStrategy, RefreshTokenStrategy],
+  providers: [AuthService, MailerService, JwtAccessStrategy, RefreshTokenStrategy,TokenService],
 })
 export class AuthModule {}

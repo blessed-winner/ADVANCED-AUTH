@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { MailerService } from './mailer/mailer.service';
 import { JwtPayload } from 'src/utils/Strategies/jwt-access.strategy';
-import * as crypto from 'crypto';
+import { TokenService } from 'src/utils/token/token.service';
 
 
 @Injectable()
@@ -19,7 +19,8 @@ export class AuthService {
     private userRepo:Repository<User>,
     private config:ConfigService,
     private jwtService:JwtService,
-    private readonly mailerService:MailerService
+    private readonly mailerService:MailerService,
+    private tokenService:TokenService
   ){}
 
  
@@ -129,5 +130,15 @@ export class AuthService {
       if(!user || !user.refreshToken) return null
 
       return user
+  }
+
+  async requestPasswordReset(userId:string){
+     const user = await this.userRepo.findOne({ where: { id:userId } })
+     if(!user){
+       throw new NotFoundException("User not found")
+     }
+     const token = this.tokenService.generateRandomToken()
+
+     await this.tokenService.saveToken(token,userId,"10")
   }
 }
