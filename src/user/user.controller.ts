@@ -9,7 +9,7 @@ import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/role.decorator';
 import { Role } from 'src/auth/entities/user.entity';
 
-interface AuthenticatedRequest extends Request{
+export interface AuthenticatedRequest extends Request{
   user?:{ id:string }
 }
 @ApiTags('User')
